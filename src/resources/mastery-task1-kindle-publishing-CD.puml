@@ -1,1 +1,60 @@
-PARTICIPANTS: use this file for creating the class diagram in mastery task 01
+@startuml
+
+class GetBookActivity {
++ execute(GetBookRequest request) : GetBookResponse
+}
+
+class RemoveBookFromCatalogActivity {
++ execute(RemoveBookFromCatalogRequest removeBookFromCatalogRequest) : RemoveBookFromCatalogResponse
+}
+
+class SubmitBookForPublishingActivity {
++ execute(SubmitBookForPublishingRequest request) : SubmitBookForPublishingResponse
+}
+
+class RecommendationsServiceClient {
+}
+
+class CatalogItemVersion {
+- @DynamoDBHashKey bookId : String
+- @DynamoDBRangeKey version : int
+- title : String
+- author : String
+- text : String
+- @DynamoDBTypeConvertedEnum genre : BookGenre
+- inactive : boolean
+}
+
+class PublishingStatusItem {
+- @DynamoDBHashKey publishingRecordId : String
+- @DynamoDBTypeConvertedEnum @DynamoDBRangeKey status : PublishingRecordStatus
+- statusMessage : String
+- bookId : String
+}
+
+class GetPublishingStatusActivity {
++ execute(GetPublishingStatusRequest)
+}
+
+class CatalogDao {
+-dynamoDBMapper : DynamoDBMapper
+}
+
+class PublishingStatusDao {
+-dynamoDBMapper : DynamoDBMapper
+}
+
+class BookNotFoundException {
+}
+
+
+GetBookActivity --> CatalogDao
+GetBookActivity --> RecommendationsServiceClient
+GetPublishingStatusActivity --> PublishingStatusDao
+SubmitBookForPublishingActivity --> PublishingStatusDao
+CatalogItemVersion --> CatalogDao
+PublishingStatusItem --> PublishingStatusDao
+CatalogDao --> BookNotFoundException
+RemoveBookFromCatalogActivity --> CatalogDao
+
+@enduml
