@@ -1,5 +1,6 @@
 package com.amazon.ata.kindlepublishingservice.activity;
 
+import com.amazon.ata.kindlepublishingservice.converters.PublishingRecordConverter;
 import com.amazon.ata.kindlepublishingservice.dao.CatalogDao;
 import com.amazon.ata.kindlepublishingservice.dao.PublishingStatusDao;
 import com.amazon.ata.kindlepublishingservice.dynamodb.models.PublishingStatusItem;
@@ -25,14 +26,7 @@ public class GetPublishingStatusActivity {
 
     public GetPublishingStatusResponse execute(GetPublishingStatusRequest publishingStatusRequest) {
         List<PublishingStatusItem> itemList = publishingStatusDao.getPublishingStatuses(publishingStatusRequest.getPublishingRecordId());
-        List<PublishingStatusRecord> recordList = new ArrayList<>();
-
-        for (PublishingStatusItem item : itemList) {
-            PublishingStatusRecord publishingStatusRecord =
-                    new PublishingStatusRecord(String.valueOf(PublishingRecordStatus.valueOf(item.getStatus().name())),
-                            item.getStatusMessage(), item.getBookId());
-            recordList.add(publishingStatusRecord);
-        }
+        List<PublishingStatusRecord> recordList = PublishingRecordConverter.convert(itemList);
 
         return GetPublishingStatusResponse.builder()
                 .withPublishingStatusHistory(recordList)

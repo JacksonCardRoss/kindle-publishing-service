@@ -71,4 +71,32 @@ public class CatalogDao {
             throw new BookNotFoundException(String.format("No book found for id: %s", bookId));
         }
     }
+
+    public CatalogItemVersion createOrUpdateBook(KindleFormattedBook kindleBook) {
+        CatalogItemVersion newBook = new CatalogItemVersion();
+
+        if (kindleBook.getBookId() != null) {
+            CatalogItemVersion oldBook = getBookFromCatalog(kindleBook.getBookId());
+            if (oldBook == null) {
+                throw new BookNotFoundException("Book was not found in catalog");
+            }
+            oldBook.setInactive(true);
+            saveBookToCatalog(oldBook);
+            newBook.setBookId(oldBook.getBookId());
+            newBook.setVersion(oldBook.getVersion() + 1);
+
+        } else { // if book is not found in catalog
+            // if book does not exist in catalog - generates new id and sets the version to 1
+            newBook.setBookId(KindlePublishingUtils.generateBookId());
+            newBook.setVersion(1);
+        }
+        newBook.setTitle(kindleBook.getTitle());
+        newBook.setAuthor(kindleBook.getAuthor());
+        newBook.setText(kindleBook.getText());
+        newBook.setGenre(kindleBook.getGenre());
+        newBook.setInactive(false);
+        saveBookToCatalog(newBook);
+
+        return newBook;
+    }
 }

@@ -24,9 +24,11 @@ import javax.inject.Inject;
  */
 public class SubmitBookForPublishingActivity {
 
-    private PublishingStatusDao publishingStatusDao;
+    private final PublishingStatusDao publishingStatusDao;
 
-    private CatalogDao catalogDao;
+    private final CatalogDao catalogDao;
+
+    private final BookPublishRequestManager bookPublishRequestManager;
 
     /**
      * Instantiates a new SubmitBookForPublishingActivity object.
@@ -34,9 +36,10 @@ public class SubmitBookForPublishingActivity {
      * @param publishingStatusDao PublishingStatusDao to access the publishing status table.
      */
     @Inject
-    public SubmitBookForPublishingActivity(PublishingStatusDao publishingStatusDao, CatalogDao catalogDao) {
+    public SubmitBookForPublishingActivity(PublishingStatusDao publishingStatusDao, CatalogDao catalogDao, BookPublishRequestManager bookPublishRequestManager) {
         this.publishingStatusDao = publishingStatusDao;
         this.catalogDao = catalogDao;
+        this.bookPublishRequestManager = bookPublishRequestManager;
     }
 
     /**
@@ -50,7 +53,6 @@ public class SubmitBookForPublishingActivity {
      */
     public SubmitBookForPublishingResponse execute(SubmitBookForPublishingRequest request) {
         final BookPublishRequest bookPublishRequest = BookPublishRequestConverter.toBookPublishRequest(request);
-        final BookPublishRequestManager bookPublishRequestManager = new BookPublishRequestManager();
 
         if (bookPublishRequest.getBookId() != null) {
             catalogDao.validateBookExists(bookPublishRequest.getBookId());
